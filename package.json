@@ -4,6 +4,7 @@
   "description": "\"# b8a11-server-side-Sakhawat71\"",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -11,9 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "mongodb": "^6.3.0"
-  },
-  "devDependencies": {}
+  }
 }
