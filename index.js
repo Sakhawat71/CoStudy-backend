@@ -30,16 +30,18 @@ async function run() {
 
         const coStudyAssignments = client.db('coStudy').collection('assignments');
 
-        app.get('/assignments' , async(req,res)=>{
+        app.get('/assignments', async (req, res) => {
             const result = await coStudyAssignments.find().toArray();
             res.send(result);
         })
 
-        app.post('/assignments', async(req,res)=>{
+        app.post('/assignments', async (req, res) => {
             const newAssignments = req.body;
-            const result = coStudyAssignments.insertOne(newAssignments);
+            const result = await coStudyAssignments.insertOne(newAssignments);
             res.send(result);
         })
+        
+
 
 
         // Send a ping to confirm a successful connection
