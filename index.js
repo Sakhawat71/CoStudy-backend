@@ -36,11 +36,27 @@ async function run() {
             const result = await coStudyAssignments.find().toArray();
             res.send(result);
         })
+        app.get('/assignments/:id' , async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id : new ObjectId(id)};
+            const result = await coStudyAssignments.findOne(query);
+            res.send(result);
+        })
 
         app.post('/assignments', async (req, res) => {
             const newAssignments = req.body;
             const result = await coStudyAssignments.insertOne(newAssignments);
             res.send(result);
+        })
+
+        app.put('/assignments/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id : new ObjectId(id)};
+            const options = { upsert: true };
+            const assignment = req.body;
+
+            
+
         })
 
         app.delete('/assignments/:id', async (req, res) => {
