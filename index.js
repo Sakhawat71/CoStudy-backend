@@ -52,10 +52,22 @@ async function run() {
         app.put('/assignments/:id', async(req,res)=>{
             const id = req.params.id;
             const query = {_id : new ObjectId(id)};
-            const options = { upsert: true };
+            // const options = { upsert: true };
             const assignment = req.body;
 
-            
+            const updateAssignment = {
+                $set: {
+                    title : assignment.updatedTitle,
+                    difficulty :assignment.updatedDifficulty,
+                    date : assignment.updatedDate,
+                    marks : assignment.updatedMarks,
+                    thumbnail : assignment.updatedImage,
+                    description : assignment.updatedDescription,
+                }
+            }
+            // console.log(updateAssignment)
+            const result = await coStudyAssignments.updateOne(query,updateAssignment)
+            res.send(result);
 
         })
 
