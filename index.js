@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = 5000;
 
 // middleware
@@ -30,6 +30,8 @@ async function run() {
 
         const coStudyAssignments = client.db('coStudy').collection('assignments');
 
+
+        // assignment releted api
         app.get('/assignments', async (req, res) => {
             const result = await coStudyAssignments.find().toArray();
             res.send(result);
@@ -40,7 +42,13 @@ async function run() {
             const result = await coStudyAssignments.insertOne(newAssignments);
             res.send(result);
         })
-        
+
+        app.delete('/assignments/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await coStudyAssignments.deleteOne(query);
+            res.send(result);
+        })
 
 
 
