@@ -33,12 +33,13 @@ async function run() {
 
         // assignment releted api
         app.get('/assignments', async (req, res) => {
-            const result = await coStudyAssignments.find().toArray();
+            const cursor = coStudyAssignments.find();
+            const result = await cursor.toArray();
             res.send(result);
         })
-        app.get('/assignments/:id' , async(req,res)=>{
+        app.get('/assignments/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id : new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             const result = await coStudyAssignments.findOne(query);
             res.send(result);
         })
@@ -49,24 +50,24 @@ async function run() {
             res.send(result);
         })
 
-        app.put('/assignments/:id', async(req,res)=>{
+        app.put('/assignments/:id', async (req, res) => {
             const id = req.params.id;
-            const query = {_id : new ObjectId(id)};
+            const query = { _id: new ObjectId(id) };
             // const options = { upsert: true };
             const assignment = req.body;
 
             const updateAssignment = {
                 $set: {
-                    title : assignment.updatedTitle,
-                    difficulty :assignment.updatedDifficulty,
-                    date : assignment.updatedDate,
-                    marks : assignment.updatedMarks,
-                    thumbnail : assignment.updatedImage,
-                    description : assignment.updatedDescription,
+                    title: assignment.updatedTitle,
+                    difficulty: assignment.updatedDifficulty,
+                    date: assignment.updatedDate,
+                    marks: assignment.updatedMarks,
+                    thumbnail: assignment.updatedImage,
+                    description: assignment.updatedDescription,
                 }
             }
             // console.log(updateAssignment)
-            const result = await coStudyAssignments.updateOne(query,updateAssignment)
+            const result = await coStudyAssignments.updateOne(query, updateAssignment)
             res.send(result);
 
         })
