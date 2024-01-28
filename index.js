@@ -82,20 +82,35 @@ async function run() {
 
         // submitted assignment
 
-        app.get('/api/v1/submitted-assignment' , async(req,res)=>{
-            
+        app.get('/api/v1/submitted-assignment', async (req, res) => {
+
             const cursor = submittedAssignments.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        app.post("/api/v1/submitted-assignment" , async(req,res)=>{
+        app.post("/api/v1/submitted-assignment", async (req, res) => {
             const submitted = req.body;
             const result = await submittedAssignments.insertOne(submitted);
             res.send(result);
-            // console.log(result);
         })
+        app.put('/api/v1/mark-assignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const assignment = req.body;
+            const options = { upsert: true };
 
+            const updateStatus = {
+                $set: {
+                    status: assignment.status,
+                    givenMark: assignment.givenMark,
+                    examineerFeedback: assignment.feedback,
+                }
+            }
+
+            const result = await submittedAssignments.updateOne(query, updateStatus, options);
+            res.send(result)
+        })
 
 
         // Send a ping to confirm a successful connection
