@@ -3,7 +3,7 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const port = 5000;
+const PORT = process.env.PORT || 5000;
 
 // middleware
 app.use(cors())
@@ -80,11 +80,19 @@ async function run() {
         })
 
 
+        // my assignment 
+
+        // app.get('/api/v1/my-assignment' , async(req,res)=>{
+
+        // })
+
+
+
         // submitted assignment
 
         app.get('/api/v1/submitted-assignment', async (req, res) => {
 
-            const cursor = submittedAssignments.find();
+            const cursor = submittedAssignments.find({status: 'pending'});
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -129,6 +137,6 @@ app.get('/', (req, res) => {
     res.send('CoStudy Server running .................')
 })
 
-app.listen(port, () => {
-    console.log(`CoStudy app listening on port ${port}`)
+app.listen(PORT, () => {
+    console.log(`CoStudy app listening on port ${PORT}`)
 })
