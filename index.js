@@ -82,9 +82,11 @@ async function run() {
 
         // my assignment 
 
-        // app.get('/api/v1/my-assignment' , async(req,res)=>{
-
-        // })
+        app.get('/api/v1/my-assignment' , async(req,res)=>{
+            const cursor = submittedAssignments.find({status: 'completed'})
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
 
