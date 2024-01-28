@@ -29,7 +29,7 @@ async function run() {
         client.connect();
 
         const coStudyAssignments = client.db('coStudy').collection('assignments');
-
+        const submittedAssignments = client.db('coStudy').collection('submitted')
 
         // assignment releted api
         app.get('/assignments', async (req, res) => {
@@ -77,6 +77,23 @@ async function run() {
             const query = { _id: new ObjectId(id) };
             const result = await coStudyAssignments.deleteOne(query);
             res.send(result);
+        })
+
+
+        // submitted assignment
+
+        app.get('/api/v1/submitted-assignment' , async(req,res)=>{
+            
+            const cursor = submittedAssignments.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.post("/api/v1/submitted-assignment" , async(req,res)=>{
+            const submitted = req.body;
+            const result = await submittedAssignments.insertOne(submitted);
+            res.send(result);
+            // console.log(result);
         })
 
 
