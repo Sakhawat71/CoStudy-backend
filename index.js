@@ -85,7 +85,7 @@ async function run() {
         app.get('/api/v1/my-assignment' , async(req,res)=>{
 
             const options  = {
-                projection: { _id: 1, user: 1, title: 1 ,givenMark: 1,examineerFeedback: 1, status: 1}
+                projection: { _id: 1, user: 1, title: 1 ,givenMark: 1,examineerFeedback: 1, status: 1, marks: 1}
             }
             const cursor = submittedAssignments.find({},options)
             const result = await cursor.toArray();
