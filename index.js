@@ -37,6 +37,27 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
+
+        // query assignmet
+        app.get('/api/v1/assignments/:label?', async (req, res) => {
+            try {
+                let label = req.params.label;
+                // console.log(label)
+                let filter = {};
+
+                if (label) {
+                    filter = { difficulty: label };
+                }
+
+                const data = coStudyAssignments.find(filter);
+                const result = await data.toArray();
+                res.send(result)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                res.status(500).json({ message: 'Error fetching data' });
+            }
+        })
+
         app.get('/assignments/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
@@ -82,12 +103,12 @@ async function run() {
 
         // my assignment 
 
-        app.get('/api/v1/my-assignment' , async(req,res)=>{
+        app.get('/api/v1/my-assignment', async (req, res) => {
 
-            const options  = {
-                projection: { _id: 1, user: 1, title: 1 ,givenMark: 1,examineerFeedback: 1, status: 1, marks: 1}
+            const options = {
+                projection: { _id: 1, user: 1, title: 1, givenMark: 1, examineerFeedback: 1, status: 1, marks: 1 }
             }
-            const cursor = submittedAssignments.find({},options)
+            const cursor = submittedAssignments.find({}, options)
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -98,7 +119,7 @@ async function run() {
 
         app.get('/api/v1/submitted-assignment', async (req, res) => {
 
-            const cursor = submittedAssignments.find({status: 'pending'});
+            const cursor = submittedAssignments.find({ status: 'pending' });
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -124,6 +145,12 @@ async function run() {
 
             const result = await submittedAssignments.updateOne(query, updateStatus, options);
             res.send(result)
+        })
+
+        // total assignments 
+        app.get('/api/v1/total-assignments', async (req, res) => {
+            const count = await coStudyAssignments.estimatedDocumentCount();
+            res.send({ count });
         })
 
 
