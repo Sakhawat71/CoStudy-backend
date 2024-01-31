@@ -33,16 +33,22 @@ async function run() {
 
         // assignment releted api
         app.get('/assignments', async (req, res) => {
+
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
+
             const cursor = coStudyAssignments.find();
-            const result = await cursor.toArray();
+            const result = await cursor
+            .skip(page * size)
+            .limit(size)
+            .toArray();
             res.send(result);
         })
 
         // query assignmet
-        app.get('/api/v1/assignments/:label?', async (req, res) => {
+        app.get(`/api/v1/assignments/:label?`, async (req, res) => {
             try {
                 let label = req.params.label;
-                // console.log(label)
                 let filter = {};
 
                 if (label) {
