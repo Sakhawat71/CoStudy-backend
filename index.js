@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 5000;
 // middleware
 app.use(cors({
     origin: [
-        // 'https://online-group-study-71.web.app/',
-        'http://localhost:5173/'
+        'https://online-group-study-71.web.app',
+        'http://localhost:5173'
     ],
     credentials: true,
 }))
