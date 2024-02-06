@@ -2,14 +2,39 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 require('dotenv').config()
+const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const PORT = process.env.PORT || 5000;
 
 // middleware
-app.use(cors())
+app.use(cors({
+    origin: [
+        // 'https://online-group-study-71.web.app/',
+        'http://localhost:5173/'
+    ],
+    credentials: true,
+}))
 app.use(express.json())
+app.use(cookieParser())
 
-// console.log(process.env.DB_USER)
+
+const verifyToken = (req, res, next) => {
+    const { token } = req.cookies;
+
+    if (!token) {
+        return res.status(401).send({ message: "UNauthorized" })
+    }
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+        if (err) {
+            return res.status(401).send({ message: "unAuthorized" })
+        }
+
+        req.user = decoded;
+        next()
+    })
+}
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vcouptk.mongodb.net/?retryWrites=true&w=majority`;
@@ -31,6 +56,23 @@ async function run() {
         const coStudyAssignments = client.db('coStudy').collection('assignments');
         const submittedAssignments = client.db('coStudy').collection('submitted')
 
+
+        // jwt
+        app.post("/api/v1/auth/jwt", async (req, res) => {
+
+            const email = req.body;
+            const token = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET);
+            // console.log(token)
+            res
+                .cookie('token', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'none'
+                })
+                .send({ success: true })
+        })
+
+
         // assignment releted api
         app.get('/assignments', async (req, res) => {
 
@@ -39,9 +81,9 @@ async function run() {
 
             const cursor = coStudyAssignments.find();
             const result = await cursor
-            .skip(page * size)
-            .limit(size)
-            .toArray();
+                .skip(page * size)
+                .limit(size)
+                .toArray();
             res.send(result);
         })
 
@@ -109,12 +151,26 @@ async function run() {
 
         // my assignment 
 
-        app.get('/api/v1/my-assignment', async (req, res) => {
+        app.get('/api/v1/my-assignment', verifyToken, async (req, res) => {
 
+            let query = {}
             const options = {
                 projection: { _id: 1, user: 1, title: 1, givenMark: 1, examineerFeedback: 1, status: 1, marks: 1 }
             }
-            const cursor = submittedAssignments.find({}, options)
+            const userEmail = req.query.email;
+            const tokenEmail = req.user.email;
+            console.log('given email: ', userEmail)
+            console.log('decoded', req.user.email)
+
+            if (userEmail !== tokenEmail) {
+                return res.status(403).send({ message: "Forbidden access" })
+            }
+
+            if (userEmail === tokenEmail) {
+                query = { user: userEmail }
+                console.log('query : ',query)
+            }
+            const cursor = submittedAssignments.find(query, options)
             const result = await cursor.toArray();
             res.send(result);
         })
