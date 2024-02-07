@@ -11,7 +11,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
     origin: [
         'https://online-group-study-71.web.app',
-        'http://localhost:5173'
+        'http://localhost:5173',
+        'https://costudy.netlify.app'
     ],
     credentials: true,
 }))
