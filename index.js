@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 5000;
 // middleware
 app.use(cors({
     origin: [
-        // 'https://online-group-study-71.web.app/',
-        'http://localhost:5173/'
+        'https://online-group-study-71.web.app',
+        'http://localhost:5173'
     ],
     credentials: true,
 }))
@@ -23,7 +23,7 @@ const verifyToken = (req, res, next) => {
     const { token } = req.cookies;
 
     if (!token) {
-        return res.status(401).send({ message: "UNauthorized" })
+        return res.status(401).send({ message: "UNauthorized !token" })
     }
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
@@ -60,14 +60,14 @@ async function run() {
         // jwt
         app.post("/api/v1/auth/jwt", async (req, res) => {
 
-            const email = req.body;
-            const token = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET);
-            // console.log(token)
+            const { email } = req.body;
+            const token = jwt.sign({ email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h' });
+            // console.log(email)
             res
                 .cookie('token', token, {
                     httpOnly: true,
                     secure: false,
-                    sameSite: 'none'
+                    // sameSite: 'none'
                 })
                 .send({ success: true })
         })
@@ -153,22 +153,23 @@ async function run() {
 
         app.get('/api/v1/my-assignment', verifyToken, async (req, res) => {
 
-            let query = {}
+            let query = {};
             const options = {
                 projection: { _id: 1, user: 1, title: 1, givenMark: 1, examineerFeedback: 1, status: 1, marks: 1 }
             }
+
             const userEmail = req.query.email;
             const tokenEmail = req.user.email;
-            console.log('given email: ', userEmail)
+            console.log('given api query ', userEmail)
             console.log('decoded', req.user.email)
 
             if (userEmail !== tokenEmail) {
-                return res.status(403).send({ message: "Forbidden access" })
+                return res.status(403).send({ message: "Forbidden access userEmail !== tokenEmail" })
             }
 
             if (userEmail === tokenEmail) {
                 query = { user: userEmail }
-                console.log('query : ',query)
+                // console.log('query : ', query)
             }
             const cursor = submittedAssignments.find(query, options)
             const result = await cursor.toArray();
