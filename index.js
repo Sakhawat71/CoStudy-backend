@@ -67,7 +67,7 @@ async function run() {
                 .cookie('token', token, {
                     httpOnly: true,
                     secure: false,
-                    // sameSite: 'none'
+                    sameSite: 'none'
                 })
                 .send({ success: true })
         })
